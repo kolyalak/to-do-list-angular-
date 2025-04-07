@@ -1,0 +1,61 @@
+<div class="todo-container">
+    <h1>To-Do List</h1>
+
+    <form (ngSubmit)="addTask(taskForm)" #taskForm="ngForm">
+        <input type="text" placeholder="Task name" [(ngModel)]="newTask.name" name="name" required>
+        <input type="datetime-local" [(ngModel)]="newTask.date" name="date">
+        <textarea placeholder="Task description" [(ngModel)]="newTask.description" name="description"></textarea>
+        <input type="text" placeholder="Tags (use comma ',')" [(ngModel)]="newTask.tags" name="tags">
+        <select name="priority" [(ngModel)]="newTask.priority">
+            <option *ngFor="let num of [1,2,3,4,5]" [value]="num">{{ num }}</option>
+        </select>
+
+        <select name="project" [(ngModel)]="newTask.project">
+            <option value="">No Project</option>
+            <option *ngFor="let project of projects" [value]="project.name">{{ project.name }}</option>
+        </select>
+
+        <button type="submit">{{ editingTask ? 'Save' : 'Add Task' }}</button>
+    </form>
+
+    <input type="text" placeholder="New Project Name" [(ngModel)]="newProjectName">
+    <button (click)="addProject()">Add Project</button>
+
+    <div class="filters">
+        <input type="text" placeholder="Search tasks..." [(ngModel)]="filterText">
+        <select [(ngModel)]="filterPriority">
+            <option [value]="null">All Priorities</option>
+            <option *ngFor="let num of [1,2,3,4,5]" [value]="num">{{ num }}</option>
+        </select>
+        <button (click)="filterDate = 'day'">Today</button>
+        <button (click)="filterDate = 'week'">This Week</button>
+        <button (click)="filterDate = 'month'">This Month</button>
+    </div>
+
+    <ul>
+        <li *ngFor="let task of filterTasks()" [ngClass]="{'task-in-project': task.project}">
+            <h3>{{ task.name }} (Priority: {{ task.priority }})</h3>
+            <p>{{ task.description }}</p>
+            <small>Tags: {{ task.tags.join(', ') }}</small>
+            <small>Project: {{ task.project || 'None' }}</small>
+            <div>
+                <button (click)="editTask(task)">Edit</button>
+                <button (click)="deleteTask(task)">Delete</button>
+            </div>
+        </li>
+    </ul>
+
+    <h2>Projects</h2>
+    <ul class="projects">
+        <li *ngFor="let project of projects">
+            <h3>{{ project.name }}</h3>
+            <ul>
+                <li *ngFor="let task of project.tasks" class="task-in-project">
+                    {{ task.name }}
+                </li>
+            </ul>
+            <button (click)="addToProject(editingTask, project.name)" *ngIf="editingTask && !editingTask.project">Add
+                Task to Project</button>
+        </li>
+    </ul>
+</div>
